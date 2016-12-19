@@ -129,6 +129,8 @@ var Component = /** @class */ (function (_super) {
             this.createChildComponentsFromTags(this.getGui());
         }
     };
+    Component.prototype.attributesSet = function () {
+    };
     Component.prototype.wireQuerySelectors = function () {
         var _this = this;
         if (!this.eGui) {
