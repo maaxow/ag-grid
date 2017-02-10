@@ -25,14 +25,17 @@ var template =
                 '<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btFirst"><md-icon class="material-icons material-icons">first_page</md-icon></button>'+
                 '<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btPrevious"><md-icon class="material-icons material-icons">navigate_before</md-icon></button>'+
                 '[PAGE] '+
-                '<span id="current"></span>'+
+                '<md-input-container class="md-input-has-value md-CGI-theme">' +
+        					'<input id="current" class="md-input" type="number" aria-label=" "/>' +
+        					'<div class="md-errors-spacer"></div>' +
+        				'</md-input-container>' +
                 ' [OF] '+
                 '<span id="total"></span>'+
                 '<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btNext"><md-icon class="material-icons material-icons">navigate_next</md-icon></button>'+
                 '<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btLast"><md-icon class="material-icons material-icons">last_page</md-icon></button>'+
             '</span>'+
         '</div>';
-var templateTop = 
+var templateTop =
 		'<div class="ag-paging-panel ag-font-style">' +
 			'<span id="pageRowSummaryPanelTop" class="ag-paging-row-summary-panel">' +
 				'<span id="firstRowOnPageTop"></span>' +
@@ -45,7 +48,10 @@ var templateTop =
 				'<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btFirstTop"><md-icon class="material-icons material-icons">first_page</md-icon></button>' +
 				'<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btPreviousTop"><md-icon class="material-icons material-icons">navigate_before</md-icon></button>' +
 				'[PAGE] ' +
-				'<span id="currentTop"></span>' +
+				'<md-input-container class="md-input-has-value md-CGI-theme">' +
+					'<input id="currentTop" class="md-input" type="number" aria-label=" "/>' +
+					'<div class="md-errors-spacer"></div>' +
+				'</md-input-container>' +
 				' [OF] ' +
 				'<span id="totalTop"></span>' +
 				'<button type="button" class="ag-paging-button md-button md-CGI-theme md-ink-ripple layout-align-center-end" id="btNextTop"><md-icon class="material-icons material-icons">navigate_next</md-icon></button>' +
@@ -87,7 +93,7 @@ export class PaginationController {
     private foundMaxRow: boolean;
     private totalPages: number;
     private currentPage: number;
-	
+
 	private eGuiTop: any;
     private btNextTop: any;
     private btPreviousTop: any;
@@ -201,7 +207,7 @@ export class PaginationController {
             return '';
         } else {
             // took this from: http://blog.tompawlak.org/number-currency-formatting-javascript
-            return input.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+            return input.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ");
         }
     }
 
@@ -209,7 +215,8 @@ export class PaginationController {
         if (this.foundMaxRow) {
             this.lbTotal.innerHTML = this.myToLocaleString(this.totalPages);
             this.lbRecordCount.innerHTML = this.myToLocaleString(this.rowCount);
-			this.lbTotalTop.innerHTML = this.myToLocaleString(this.totalPages);
+
+			      this.lbTotalTop.innerHTML = this.myToLocaleString(this.totalPages);
             this.lbRecordCountTop.innerHTML = this.myToLocaleString(this.rowCount);
         } else {
             var moreText = this.gridOptionsWrapper.getLocaleTextFunc()('more', 'more');
@@ -272,8 +279,8 @@ export class PaginationController {
         var startRow = this.currentPage * this.pageSize;
         var endRow = (this.currentPage + 1) * this.pageSize;
 
-        this.lbCurrent.innerHTML = this.myToLocaleString(this.currentPage + 1);
-        this.lbCurrentTop.innerHTML = this.myToLocaleString(this.currentPage + 1);
+        this.lbCurrent.value = this.myToLocaleString(this.currentPage + 1);
+        this.lbCurrentTop.value = this.myToLocaleString(this.currentPage + 1);
 
         this.callVersion++;
         var callVersionCopy = this.callVersion;
@@ -439,6 +446,9 @@ export class PaginationController {
         this.lbLastRowOnPageTop = this.eGuiTop.querySelector('#lastRowOnPageTop');
         this.ePageRowSummaryPanelTop = this.eGuiTop.querySelector('#pageRowSummaryPanelTop');
 
+        this.lbCurrentTop.style.width = "50px";
+        this.lbCurrent.style.width = "50px";
+
         var that = this;
 
         this.btNext.addEventListener('click', function () {
@@ -456,8 +466,8 @@ export class PaginationController {
         this.btLast.addEventListener('click', function () {
             that.onBtLast();
         });
-		
-		
+
+
         this.btNextTop.addEventListener('click', function () {
             that.onBtNext();
         });
@@ -473,5 +483,17 @@ export class PaginationController {
         this.btLastTop.addEventListener('click', function () {
             that.onBtLast();
         });
+
+    		this.lbCurrentTop.addEventListener('change', function(event: any){
+    			var newValue = parseInt(event.srcElement.value);
+          that.currentPage = (newValue <= that.totalPages && newValue > 0 && !isNaN(newValue)) ? (newValue - 1) : 0;
+          that.loadPage();
+    		});
+        this.lbCurrent.addEventListener('change', function(event: any){
+    			var newValue = parseInt(event.srcElement.value);
+
+          that.currentPage = (newValue <= that.totalPages && newValue > 0 && !isNaN(newValue)) ? (newValue - 1) : 0;
+          that.loadPage();
+    		});
     }
 }
